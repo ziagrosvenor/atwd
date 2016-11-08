@@ -3,6 +3,32 @@
   ini_set("display_errors", "On");
   libxml_use_internal_errors(true);
 
+  function formatError($code) {
+    $errors = array(
+      "1000" =>	"Currency type not recognized",
+      "1100" =>	"Required parameter is missing",
+      "1200" =>	"Parameter not recognized",
+      "1300" =>	"Currency amount must be a decimal number",
+      "1400" =>	"Error in service",
+    );
+
+    return array(
+      "error" => array(
+        "code" => $code,
+        "msg" => $errors[$code] ? $errors[$code] : $errors["1400"],
+      )
+    );
+
+  }
+
+  function handleError($code, $assertion, $value) {
+    $err = formatError($code);
+
+    if ($value === $assertion) {
+      die(var_dump($err));
+    }
+  }
+
   require_once("lib/third-party-data.php");
   require_once("lib/transformer.php");
   require_once("lib/store.php");
@@ -28,6 +54,9 @@
   $to = $_GET["to"];
 
   $fromValues = $currenciesStore->findByCode($from);
+
+  handleError("1000", false, $currenciesStore->findByCode($from));
+
   $toValues = $currenciesStore->findByCode($to);
 
   $fromValues["amnt"] = $amnt;
