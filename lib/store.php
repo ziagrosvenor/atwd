@@ -10,7 +10,6 @@ class CurrenciesStore {
   }
 
   public function findByCode($code) {
-
 	  $result = false;
 
 	  foreach ($this->currencies as $el) {
@@ -18,6 +17,11 @@ class CurrenciesStore {
 			  $result = $el;
 		  }
 	  }
+
+    // When unable to find a currency type then throw
+    if (!$result) {
+      throw new Exception('1000');
+    }
 
 	  return (array) $result;
   }
