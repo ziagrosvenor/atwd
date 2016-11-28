@@ -4,7 +4,7 @@
 class ThirdPartyData {
   private $CURRENCY_CODES = array(
     "CAD",
-    "HF",
+    "HUF",
     "CNY",
     "DKK",
     "EUR",
@@ -28,14 +28,13 @@ class ThirdPartyData {
   );
 
   private $YQL_STATEMENT = 'select * from csv where url="http://finance.yahoo.com/d/quotes.csv?e=.csv&f=nl1d1t1&s=';
-
   private $API_URL = "https://query.yahooapis.com/v1/public/yql";
   private $CURRENCY_ISO_URL = "http://www.currency-iso.org/dam/downloads/lists/list_one.xml";
 
   public $format = "xml";
 
   // Queries a single exchange rate from the Yahoo finance API
-  public function getRate($code) {
+  public function getByCode($code) {
     return file_get_contents($this->templateExchangeAPIQuery(array($code)));
   }
 

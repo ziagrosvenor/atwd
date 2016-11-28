@@ -1,0 +1,26 @@
+#form {
+  width: 33%;
+  margin: auto;
+}
+
+.ui-input {
+  margin-bottom: 12px;
+
+}
+
+.ui-input label {
+  width: 100%;
+  display: block;
+}
+
+.ui-input input[type="text"]  {
+  border-radius: 2px;
+  width: 30%;
+}
+
+#form {
+  padding: 24px;
+  background-color:  #ff4a4a;
+  color: #fff; font-family: 'Lucida Sans', Arial, sans-serif; font-size: 16px; line-height: 26px; margin: 0; 
+}
+

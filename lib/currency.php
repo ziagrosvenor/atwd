@@ -1,6 +1,6 @@
 <?php
   function convertCurrency($fromRate, $toRate, $amnt) {
-  	return (floatval($amnt) * floatval($fromRate)) * floatval($toRate);
+  	return ($amnt * (1 / $fromRate)) * $toRate;
   }
 
   function covertFromRateToBase($fromRate) {

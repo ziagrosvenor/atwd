@@ -15,24 +15,36 @@ class Transformer {
 
     foreach ($currenciesXml->currencies[0] as $el) {
       $this->removeBaseFromCode($el);
-      $this->addDateTime($el);
+      $this->addTimestamp($el);
       $this->addCurrencyNameLocations($el, $countriesCurrencies);
     };
 
     return $currenciesXml->currencies[0]->asXML();
   }
 
+  public function updateCurrency($rate, $currency) {
+    $currenciesXml = applyXSLT(
+      "currency.xsl",
+      $rate
+    );
+
+    foreach ($currenciesXml->currencies[0] as $el) {
+      $this->addTimestamp($el);
+    };
+
+    $currency["rate"] = (string) $currenciesXml->currencies[0][0]->currency->rate;
+    $currency["timestamp"] = (string) $currenciesXml->currencies[0][0]->currency->timestamp;
+
+    return $currency;
+
+  }
+
   private function removeBaseFromCode($el) {
     $el->code = str_replace("GBP/", "", $el->code);
   }
 
-  private function addDateTime($el) {
-
-    $el->date = date("d/m/Y");
-    $el->time = date("G:ia");
-
-    $timestamp = dateTimeToTimestamp("!d/m/Y G:ia", $el->date . " " . $el->time);
-    $el->addchild("timestamp", $timestamp);
+  private function addTimestamp($el) {
+    $el->addchild("timestamp", strtotime($el->date . " " . $el->time));
   }
 
   private function addCurrencyNameLocations($el, $countries) {

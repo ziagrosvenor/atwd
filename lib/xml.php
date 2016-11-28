@@ -1,4 +1,9 @@
 <?php
+  /* This function is used to convert the response
+   * from the Yahoo Finance API into the shape of that
+   * of the model of this application.
+   *
+   */
   function applyXSLT($xslLocation, $xmlDoc) {
     // http://php.net/manual/en/xsl.examples.php
     $xslDoc = new DOMDocument();
@@ -8,57 +13,30 @@
     return simplexml_load_string($proc->transformToXML($xmlDoc));
   }
 
-  function array_to_xml($array, $level=1) {
-    // https://vantulder.net/old-articles/array-to-xml
-    $xml = '';
-    foreach ($array as $key=>$value) {
-      $key = strtolower($key);
-      if (is_object($value)) {$value=get_object_vars($value);}// convert object to array
+  /* Covert some an array into XML data.
+   * This function is used to format the data that is sent
+   * in responses from this service.
+   */
+  function array_to_xml($array, $root) {
+    $xml = "<{$root}>\n";
 
-      if (is_array($value)) {
-        $multi_tags = false;
-        foreach($value as $key2=>$value2) {
-          if (is_object($value2)) {$value2=get_object_vars($value2);} // convert object to array
-          if (is_array($value2)) {
-            $xml .= str_repeat("\t",$level)."<$key>\n";
-            $xml .= array_to_xml($value2, $level+1);
-            $xml .= str_repeat("\t",$level)."</$key>\n";
-            $multi_tags = true;
-          } else {
-            if (trim($value2)!='') {
-              if (htmlspecialchars($value2)!=$value2) {
-                $xml .= str_repeat("\t",$level).
-                  "<$key2><![CDATA[$value2]]>". // changed $key to $key2... didn't work otherwise.
-                  "</$key2>\n";
-              } else {
-                $xml .= str_repeat("\t",$level).
-                  "<$key2>$value2</$key2>\n"; // changed $key to $key2
-              }
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+          $xml .= array_to_xml($value, $key);
+        } else {
+            if (is_numeric($key)) {
+                $xml .= "<{$root}>{$value}</{$root}>\n";
+            } else {
+                $xml .= "<{$key}>{$value}</{$key}>\n";
             }
-            $multi_tags = true;
-          }
         }
-        if (!$multi_tags and count($value)>0) {
-          $xml .= str_repeat("\t",$level)."<$key>\n";
-          $xml .= array_to_xml($value, $level+1);
-          $xml .= str_repeat("\t",$level)."</$key>\n";
-        }
-
-      } else {
-        if (trim($value)!='') {
-          echo "value=$value<br>";
-          if (htmlspecialchars($value)!=$value) {
-            $xml .= str_repeat("\t",$level)."<$key>".
-              "<![CDATA[$value]]></$key>\n";
-          } else {
-            $xml .= str_repeat("\t",$level).
-              "<$key>$value</$key>\n";
-          }
-        }
-      }
     }
+
+    $xml .= "</{$root}>\n";
+
     return $xml;
-}
+  }
+
 
 
   function xml_to_array($root) {
